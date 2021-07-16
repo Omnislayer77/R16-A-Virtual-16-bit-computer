@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
 #include <vector>
-
+ 
 class CPU
 {
 public:
