@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "/home/matthew/Desktop/C-C++/SFML Stuff/16-Bit Computer Emulator/R16-A-Virtual-16-bit-computer",
+      "environment": [],
+      "program": "/home/matthew/Desktop/C-C++/SFML Stuff/16-Bit Computer Emulator/R16-A-Virtual-16-bit-computer/build/Debug/outDebug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
+    }
+  ]
+}
