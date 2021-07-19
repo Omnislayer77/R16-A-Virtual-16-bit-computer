@@ -29,7 +29,7 @@ public:
             registers[i] = 0;
         }    
         instructionPointer = 0xE000;  
-        stackPointer = 0x1400;   
+        stackPointer = 0x0000;   
         flags = 0x00;   
         RW = true; 
         microcodePointer =  0x0000;
@@ -285,7 +285,6 @@ public:
                 RW = false;
                 *dataBus = registers[instructionRegister & 0xff];
                 *addressBus = stackPointer--;
-                if(stackPointer < 0x1000) std::cout << "Warning: Stack Overflow! Stack went below $1000";
                 microcodePointer = 0;
                 break;
             
@@ -294,7 +293,6 @@ public:
                 {
                 case 3:
                     *addressBus = ++stackPointer;
-                    if(stackPointer > 0x1400) std::cout << "Warning: Stack Underflow! Stack went above $1400";
                     RW = true;
                     break;
                 case 4:
@@ -311,7 +309,6 @@ public:
                     *dataBus = instructionPointer;
                     *addressBus = stackPointer;
                     stackPointer--;
-                    if(stackPointer < 0x1000) std::cout << "Warning: Stack Overflow! Stack went below $1000";
                     instructionPointer = jmpLocation;
                     microcodePointer = 0;
                     break;
@@ -323,7 +320,6 @@ public:
                 {
                 case 3:
                     *addressBus = ++stackPointer;
-                    if(stackPointer > 0x1400) std::cout << "Warning: Stack Underflow! Stack went above $1400";
                     RW = true;
                     break;
                 case 4:
