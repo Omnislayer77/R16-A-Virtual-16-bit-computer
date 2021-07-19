@@ -564,7 +564,12 @@ public:
                 memory[*addressBus - 0xD700] = *dataBus;
             }
         }
-
+        if(!memory[0x04])
+        {
+            hardDisk[(memory[0x01]<<16) + memory[0x02]] = memory[0x03];
+        } else {
+            memory[0x03] = hardDisk[(memory[0x01]<<16) + memory[0x02]];
+        }
         sf::Event event;
 
         // while there are pending events...
