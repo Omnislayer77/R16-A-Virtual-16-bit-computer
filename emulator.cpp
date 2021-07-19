@@ -284,7 +284,7 @@ public:
             case 0x50:   // PSH REGISTER
                 RW = false;
                 *dataBus = registers[instructionRegister & 0xff];
-                *addressBus = stackPointer--;
+                *addressBus = --stackPointer;
                 microcodePointer = 0;
                 break;
             
@@ -292,7 +292,7 @@ public:
                 switch(microcodePointer)
                 {
                 case 3:
-                    *addressBus = ++stackPointer;
+                    *addressBus = stackPointer++;
                     RW = true;
                     break;
                 case 4:
@@ -307,8 +307,7 @@ public:
                     RW = false;
                     uint16_t jmpLocation = *dataBus;
                     *dataBus = instructionPointer;
-                    *addressBus = stackPointer;
-                    stackPointer--;
+                    *addressBus = --stackPointer;
                     instructionPointer = jmpLocation;
                     microcodePointer = 0;
                     break;
@@ -319,7 +318,7 @@ public:
                 switch(microcodePointer)
                 {
                 case 3:
-                    *addressBus = ++stackPointer;
+                    *addressBus = stackPointer++;
                     RW = true;
                     break;
                 case 4:
@@ -327,6 +326,12 @@ public:
                     microcodePointer = 0;
                     break;
                 }
+                break;
+            
+            case 0x54:   // PSH NUM
+                RW = false;
+                *addressBus = stackPointer--;
+                microcodePointer = 0;
                 break;
             
             case 0x60:   // CLC

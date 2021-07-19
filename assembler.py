@@ -135,7 +135,7 @@ for line in tokens:
         elif(token_identifier(line[2]) == "SP"):
             output_bytes += [0x16, int(line[1][1:]), 0x00, 0x00]
         elif(token_identifier(line[1]) == "SP"):
-            output_bytes += [0x17, int(line[1][1:]), 0x00, 0x00]
+            output_bytes += [0x17, int(line[2][1:]), 0x00, 0x00]
         else:
             output_bytes += [0x14, int(line[1][1:]), labels[line[2]] >> 8, labels[line[2]] & 0xff ]
 
@@ -237,8 +237,14 @@ for line in tokens:
     elif(inst.upper() == "ROR"):
         output_bytes += [0x4a, int(line[1][1:]), 0x00, 0x00]
 
-    elif(inst.upper() == "PSH"):
+    elif(inst.upper() == "PSH" and token_identifier(line[1]) == "REG"):
         output_bytes += [0x50, int(line[1][1:]), 0x00, 0x00]
+    
+    elif(inst.upper() == "PSH" and (token_identifier(line[1]) != "REG")):
+        if(token_identifier(line[1]) == "HEXINT"):
+            output_bytes += [0x54, 0x00, (int(line[1], 16) & 0xff00) >> 8, int(line[1], 16) & 0xff]
+        else:
+            output_bytes += [0x54, 0x00, (int(line[1]) & 0xff00) >> 8, int(line[1]) & 0xff]
 
     elif(inst.upper() == "POP"):
         output_bytes += [0x51, int(line[1][1:]), 0x00, 0x00]
