@@ -114,7 +114,7 @@ for line in tokens:
         MOV_opcodes = [0x10, 0x11, 0x12, 0x13, 0x14, 0x15]
         if( token_identifier(line[1]) == 'ADDR'):
             output_bytes += [0x10, int(line[2][1:])]
-            output_bytes += [int(line[1][1:3], base = 16), int(line[1][3:5], base = 16)]
+            output_bytes += [(int(line[1][1:], base = 16) & 0xff00) >> 8, int(line[1][1:], base = 16) & 0x00ff]
         elif(token_identifier(line[1]) == 'INDADDR'):
             output_bytes += [0x11, int(line[2][1:])]
             output_bytes += [int(line[1][2:4], base = 16), int(line[1][4:6], base = 16)]
@@ -136,6 +136,23 @@ for line in tokens:
             output_bytes += [0x16, int(line[1][1:]), 0x00, 0x00]
         elif(token_identifier(line[1]) == "SP"):
             output_bytes += [0x17, int(line[2][1:]), 0x00, 0x00]
+        elif(any('[' in i for i in line) and any('+' in i for i in line)):
+            output_bytes += [0x18]
+            output_bytes += [16*int(line[1][1:])]
+            if(len(line) == 5):
+                output_bytes[-1] += int(line[2][2:])
+                output_bytes += [(int(line[4][:-1]) & 0xff00) >> 8, int(line[4][:-1]) & 0xff]
+            elif(len(line) == 4):
+                output_bytes[-1] += int(line[2].replace("+","")[2:])
+                output_bytes += [(int(line[3].replace("+","")[:-1]) & 0xff00) >> 8, int(line[3].replace("+","")[:-1]) & 0xff]
+            elif(len(line) == 3):
+                a = line[2].split('+')
+                a[0] = a[0].replace('[',"")
+                a[1] = a[1].replace(']',"")
+                output_bytes[-1] += int(a[0][1:])
+                output_bytes += [(int(a[1]) & 0xff00) >> 8, int(line[1]) & 0xff]
+
+
         else:
             output_bytes += [0x14, int(line[1][1:]), labels[line[2]] >> 8, labels[line[2]] & 0xff ]
 

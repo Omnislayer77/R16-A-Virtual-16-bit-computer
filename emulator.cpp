@@ -140,6 +140,29 @@ public:
                 stackPointer = registers[instructionRegister & 0xff];
                 microcodePointer = 0;
                 break;
+
+            case 0x18:   // MOV REGISTER, [REGISTER + NUM]
+                switch(microcodePointer)
+                {
+                case 3:
+                    *addressBus = registers[instructionRegister & 0x0f] + *dataBus;
+                    RW = true;
+                    break;
+                case 4:
+                    *addressBus = *dataBus;
+                    RW = true;
+                    break;
+                case 5:
+                    registers[instructionRegister & 0xf0] = *dataBus;
+                    microcodePointer = 0;
+                    break;
+                }
+                break;
+
+            case 0x19:   // MOV SP, REGISTER
+                stackPointer = registers[instructionRegister & 0xff];
+                microcodePointer = 0;
+                break;
             
             case 0x20:   // CMP REGISTER, NUMBER
                 flags &= 0b0011;
@@ -541,13 +564,18 @@ public:
     IO(uint16_t* _dataBus, uint16_t* _addressBus)
     {
         FILE *hardDiskFile; // read contents of file into harddisk
-        hardDiskFile = fopen("hardDisk.bin", "rb");
+        hardDiskFile = fopen("harddisk.bin", "rb");
         fread(hardDisk, 2, 16777216, hardDiskFile);
         fclose(hardDiskFile);
         for(int i = 0; i < 256; i++) // null out memory
         {
             memory[i] = 0;
         }
+
+        // for(int i = 0; i < 16777216; i++)
+        // {
+        //     hardDisk[i] = 0;
+        // }
 
         addressBus = _addressBus;
         dataBus = _dataBus;
@@ -593,7 +621,7 @@ public:
 
                 case sf::Event::Closed: // make sure SFML closes when X in corner is pressed
                     FILE *hardDiskFile; // copy hardDisk to a file for longterm storage when the program closes
-                    hardDiskFile = fopen("hardDisk.bin", "wb");
+                    hardDiskFile = fopen("harddisk.bin", "wb");
                     fwrite(hardDisk, 2, 16777216, hardDiskFile);
                     fclose(hardDiskFile);
                     (*window).close();
