@@ -10,7 +10,8 @@ $E000 - $FFFF  ROM <br />
  <br />
 The address space of I/O is as follows <br />
 $D700 : Current Key Pressed <br />
-$D701 : Address for hard disk <br />
+$D701 : Address for hard disk (upper 16 bits) <br />
+$D702 : Address for hard disk (lower 16 bits) <br />
 $D702 : Data for hard disk <br />
 $D703 : R/W for hard disk (0 writing, 1-65535 reading) <br />
 $D704 - $D7FF - Currently unused <br />
