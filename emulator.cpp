@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
 #include <vector>
-// this is a test
+
 class CPU
 {
 public:
@@ -65,14 +65,14 @@ public:
                 flags |= 0x01;
                 break;
 
-            case 0x10:   // MOV $1234, R1
+            case 0x10:   // MOV ADDRESS, REGISTER
                 microcodePointer = 0;
                 *addressBus = *dataBus;
                 *dataBus = registers[instructionRegister & 0xff];
                 RW = false;
                 break;
             
-            case 0x11:   // MOV [$1234], R1
+            case 0x11:   // MOV INDIRECT, REGISTER
                 switch(microcodePointer)
                 {
                 case 3:
@@ -89,7 +89,7 @@ public:
                 
                 break;
 
-            case 0x12:   // MOV R1, $1234
+            case 0x12:   // MOV REGISTER, ADDRESS
                 switch(microcodePointer)
                 {
                 case 3:
@@ -103,7 +103,7 @@ public:
                 }
                 break;
 
-            case 0x13:   // MOV R1, [$1234]
+            case 0x13:   // MOV REGISTER, INDIRECT
                 switch(microcodePointer)
                 {
                 case 3:
@@ -121,24 +121,34 @@ public:
                 }
                 break;
             
-            case 0x14:   // MOV R1, 0x1234
+            case 0x14:   // MOV REGISTER, NUMBER
                 registers[instructionRegister & 0xff] = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x15:   // MOV R1, R2
+            case 0x15:   // MOV REGISTER, REGISTER
                 registers[instructionRegister & 0xff] = registers[*dataBus & 0xff];
                 microcodePointer = 0;
                 break;
+
+            case 0x16:   // MOV REGISTER, SP
+                registers[instructionRegister & 0xff] = stackPointer;
+                microcodePointer = 0;
+                break;
             
-            case 0x20:   // CMP R1, 0x1234
+            case 0x17:   // MOV SP, REGISTER
+                stackPointer = registers[instructionRegister & 0xff];
+                microcodePointer = 0;
+                break;
+            
+            case 0x20:   // CMP REGISTER, NUMBER
                 flags &= 0b0011;
                 flags |= (int)(registers[instructionRegister & 0xff] - *dataBus == 0) << 2;
                 flags |= (int)((registers[instructionRegister & 0xff] - *dataBus) > registers[instructionRegister & 0xff]) << 3;
                 microcodePointer = 0;
                 break;
             
-            case 0x21:   // CMP R1, $1234
+            case 0x21:   // CMP REGISTER, ADDRESS
                 switch(microcodePointer)
                 {
                 case 3:
@@ -154,7 +164,7 @@ public:
                 }
                 break;
             
-            case 0x22:   // CMP R1, [$1234]
+            case 0x22:   // CMP REGISTER, INDIRECT
                 switch(microcodePointer)
                 {
                 case 3:
@@ -174,51 +184,51 @@ public:
                 }
                 break;
             
-            case 0x23:   // CMP R1, R2
+            case 0x23:   // CMP REGISTER, REGISTER
                 flags &= 0b0011;
                 flags |= (int)(registers[instructionRegister & 0xff] - registers[*dataBus & 0xff] == 0) << 2;
                 flags |= (int)(registers[instructionRegister & 0xff] - registers[*dataBus & 0xff] > registers[instructionRegister & 0xff]) << 3;
                 microcodePointer = 0;
                 break;
 
-            case 0x30:   // JMP $1234
+            case 0x30:   // JMP ADDRESS
                 instructionPointer = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x31:   // BRE $1234
+            case 0x31:   // BRE ADDRESS
                 if((flags & 0b0100) >> 2 == 1) instructionPointer = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x32:   // BRN $1234
+            case 0x32:   // BRN ADDRESS
                 if((flags & 0b1000) >> 3 == 1) instructionPointer = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x33:   // BNQ $1234
+            case 0x33:   // BNQ ADDRESS
                 if((flags & 0b0100) >> 2 == 0) instructionPointer = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x34:   // BRC $1234
+            case 0x34:   // BRC ADDRESS
                 if((flags & 0b0010) >> 1 == 1) instructionPointer = *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x40:   // ADD R1, R2
+            case 0x40:   // ADD REGISTER, REGISTER
                 registers[instructionRegister & 0xff] += registers[*dataBus & 0xff];
                 flags |= registers[instructionRegister & 0xff] < registers[*dataBus & 0xff] << 1;
                 microcodePointer = 0;
                 break;
             
-            case 0x41:   // ADD R1, 0x1234
+            case 0x41:   // ADD REGISTER, NUMBER
                 registers[instructionRegister & 0xff] += *dataBus;
                 flags |= registers[instructionRegister & 0xff] < *dataBus << 1;
                 microcodePointer = 0;
                 break;
             
-            case 0x42:   // SUB R1, R2
+            case 0x42:   // SUB REGISTER, REGISTER
                 {
                     uint16_t tmp = registers[instructionRegister & 0xff];
                     registers[instructionRegister & 0xff] -= registers[*dataBus & 0xff];
@@ -227,7 +237,7 @@ public:
                     break;
                 }
 
-            case 0x43:   // SUB R1, 0x1234
+            case 0x43:   // SUB REGISTER, NUMBER
                 {
                     uint16_t tmp = registers[instructionRegister & 0xff];
                     registers[instructionRegister & 0xff] -= *dataBus;
@@ -236,42 +246,42 @@ public:
                     break;
                 }
             
-            case 0x44:   // AND R1, R2
+            case 0x44:   // AND REGISTER, REGISTER
                 registers[instructionRegister & 0xff] &= registers[*dataBus & 0xff];
                 microcodePointer = 0;
                 break;
 
-            case 0x45:   // AND R1, 0x1234
+            case 0x45:   // AND REGISTER, NUMBER
                 registers[instructionRegister & 0xff] &= *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x46:   // EOR R1, R2
+            case 0x46:   // EOR REGISTER, REGISTER
                 registers[instructionRegister & 0xff] ^= registers[*dataBus & 0xff];
                 microcodePointer = 0;
                 break;
 
-            case 0x47:   // EOR R1, 0x1234
+            case 0x47:   // EOR REGISTER, NUMBER
                 registers[instructionRegister & 0xff] ^= *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x48:   // ORR R1, R2
+            case 0x48:   // ORR REGISTER, REGISTER
                 registers[instructionRegister & 0xff] |= registers[*dataBus & 0xff];
                 microcodePointer = 0;
                 break;
 
-            case 0x49:   // ORR R1, 0x1234
+            case 0x49:   // ORR REGISTER, NUMBER
                 registers[instructionRegister & 0xff] |= *dataBus;
                 microcodePointer = 0;
                 break;
 
-            case 0x4a:   // ROR R1
+            case 0x4a:   // ROR REGISTER
                 registers[instructionRegister & 0xff] /= 2;
                 microcodePointer = 0;
                 break;
 
-            case 0x50:   // PSH R1
+            case 0x50:   // PSH REGISTER
                 RW = false;
                 *dataBus = registers[instructionRegister & 0xff];
                 *addressBus = stackPointer--;
@@ -279,7 +289,7 @@ public:
                 microcodePointer = 0;
                 break;
             
-            case 0x51:   // POP R1
+            case 0x51:   // POP REGISTER
                 switch(microcodePointer)
                 {
                 case 3:
@@ -294,7 +304,7 @@ public:
                 }
                 break;
 
-            case 0x52:   // JSR $1234
+            case 0x52:   // JSR ADDRESS
                 {
                     RW = false;
                     uint16_t jmpLocation = *dataBus;
@@ -521,20 +531,25 @@ public:
 class IO
 {
 public:
-    uint16_t* memory = new uint16_t[256];
-    uint8_t lastChar = 0;
+    uint16_t* memory   = new uint16_t[256];
+    uint16_t* hardDisk = new uint16_t[16777216];
+    uint8_t   lastChar = 0;
     uint16_t* dataBus;
     uint16_t* addressBus;
 
-    IO(uint16_t* datBus, uint16_t* addrBus)
+    IO(uint16_t* _dataBus, uint16_t* _addressBus)
     {
-        for(int i = 0; i < 256; i++) // null out memory
+        FILE *hardDiskFile;                         // read contents of file into harddisk
+        hardDiskFile = fopen("hardDisk.bin", "rb");
+        fread(hardDisk, 2, 16777216, hardDiskFile);
+        fclose(hardDiskFile);
+        for(int i = 0; i < 256; i++)                // null out memory
         {
             memory[i] = 0;
         }
 
-        addressBus = addrBus;
-        dataBus = datBus;
+        addressBus = _addressBus;
+        dataBus = _dataBus;
     }
 
     void updateState(bool RW, sf::RenderWindow *window)
@@ -571,6 +586,10 @@ public:
                     break;
 
                 case sf::Event::Closed:                                             // make sure SFML closes when X in corner is pressed
+                    FILE *hardDiskFile;                                             // copy hardDisk to a file for longterm storage when the program closes
+                    hardDiskFile = fopen("hardDisk.bin", "wb");
+                    fwrite(hardDisk, 2, 16777216, hardDiskFile);
+                    fclose(hardDiskFile);
                     (*window).close();
 
                 default:
@@ -595,7 +614,7 @@ int main()
     VisualProcessor vp = VisualProcessor(&dataBus, &addressBus);
     
 
-    sf::RenderWindow window(sf::VideoMode(800, 640), "R16 V1.0");
+    sf::RenderWindow window(sf::VideoMode(800, 640), "R16 V2.0");
     
     sf::Clock Timer;
     sf::Clock frameCounter;
