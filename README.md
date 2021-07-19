@@ -15,7 +15,7 @@ $D702 : Data for hard disk
 $D703 : R/W for hard disk (0 writing, 1-65535 reading)
 $D704 - $D7FF - Currently unused
 
-#Opcode Format
+# Opcode Format
 
 All instructions take 2 Words (4 Bytes) and are in the form of 0xaa 0xbb 0xcc 0xdd
 0xaa is the opcode
@@ -23,7 +23,7 @@ All instructions take 2 Words (4 Bytes) and are in the form of 0xaa 0xbb 0xcc 0x
 0xcc is data high byte
 0xdd is data low byte and second register is one is used (always when no data is neede such as MOV R5, R3)
 
-#Addressing Modes
+# Addressing Modes
 
 NUM - A 16-Bit Number like 0x1337 or 47855
 ADR - A value at a 16-Bit address like $18C6
@@ -43,7 +43,7 @@ INST ADR      - Instruction using just and address (like JMP)
 INST IND, REG - Instruction using an indirect address and a register
 INST          - a standalone instruction (like CLC or NOP)
 
-#Opcodes and Assembler Instructions
+# Opcodes and Assembler Instructions
 
 OPCODE - ASM INST     - DESCRIPTION
 0x00   - NOP          - Does nothing for 3 cycles
