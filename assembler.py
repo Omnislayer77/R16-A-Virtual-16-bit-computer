@@ -29,6 +29,8 @@ def token_identifier(token):
             return 'REG'
         else:
             return 'INVALID'
+    elif(token.upper() == "SP"):
+        return 'SP'
     elif(token[0] in "0123456789"):
         return 'DECINT'
     else:
@@ -130,6 +132,10 @@ for line in tokens:
                 output_bytes += [int(line[2]) >> 8, int(line[2]) & 0xff]
         elif(token_identifier(line[1]) == token_identifier(line[2]) == 'REG'):
             output_bytes += [0x15, int(line[1][1:]), 0x00, int(line[2][1:])]
+        elif(token_identifier(line[2]) == "SP"):
+            output_bytes += [0x16, int(line[1][1:]), 0x00, 0x00]
+        elif(token_identifier(line[1]) == "SP"):
+            output_bytes += [0x17, int(line[1][1:]), 0x00, 0x00]
         else:
             output_bytes += [0x14, int(line[1][1:]), labels[line[2]] >> 8, labels[line[2]] & 0xff ]
 
