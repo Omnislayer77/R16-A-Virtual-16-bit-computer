@@ -499,11 +499,11 @@ public:
 
     ROM(uint16_t* _dataBus, uint16_t* _addressBus)
     {
-        FILE *romFile;                       // read contents of rom.bin into rom memory
+        FILE *romFile; // read contents of rom.bin into rom memory
         romFile = fopen("rom.bin", "rb");
         fread(memory, 1, 16384, romFile);
         fclose(romFile);
-        for(int i = 0; i < 8192; i++)        // flip endianess from 0xBBAA to 0xAABB (little to big)
+        for(int i = 0; i < 8192; i++) // flip endianess from 0xBBAA to 0xAABB (little to big)
         {
             uint16_t tmp = memory[i] & 0x00ff;
             memory[i] = (tmp << 8) | (memory[i] >> 8);
@@ -516,10 +516,10 @@ public:
     {  
         if(*addressBus >= 0xE000 && *addressBus <= 0xFFFF) // only read from ROM if the address is in the correct range
         {
-            if(!RW)                                        // check if the CPU is writing and block it (ROM is read-only)
+            if(!RW) // check if the CPU is writing and block it (ROM is read-only)
             {
                 std::cout << "Warning, Attempt to write to Read-Only Memory at address: " << std::hex << *addressBus << std::endl;
-            } else                                         // check if the CPU is writing and block it (ROM is read-only)
+            } else // check if the CPU is writing and block it (ROM is read-only)
             {
                 *dataBus = memory[*addressBus - 0xE000];
             }
@@ -539,11 +539,11 @@ public:
 
     IO(uint16_t* _dataBus, uint16_t* _addressBus)
     {
-        FILE *hardDiskFile;                         // read contents of file into harddisk
+        FILE *hardDiskFile; // read contents of file into harddisk
         hardDiskFile = fopen("hardDisk.bin", "rb");
         fread(hardDisk, 2, 16777216, hardDiskFile);
         fclose(hardDiskFile);
-        for(int i = 0; i < 256; i++)                // null out memory
+        for(int i = 0; i < 256; i++) // null out memory
         {
             memory[i] = 0;
         }
@@ -556,7 +556,7 @@ public:
     {  
         if(*addressBus >= 0xD700 && *addressBus <= 0xD7FF) // Make sure address is in the correct range
         {
-            if(RW)                                         // Write to bus when CPU is reading and read from bus when CPU is writing
+            if(RW)  // Write to bus when CPU is reading and read from bus when CPU is writing
             {
                 *dataBus = memory[*addressBus - 0xD700];
             } else
@@ -573,7 +573,7 @@ public:
         sf::Event event;
 
         // while there are pending events...
-        while ((*window).pollEvent(event))                 // do keypresses and update correct memory location
+        while ((*window).pollEvent(event)) // do keypresses and update correct memory location
         {
             // check the type of the event...
             switch (event.type)
@@ -586,12 +586,12 @@ public:
                     }
                     break;
                 
-                case sf::Event::KeyReleased:                                        // null out $D700 when no key is pressed
+                case sf::Event::KeyReleased:  // null out $D700 when no key is pressed
                     memory[0] = 0x0000;
                     break;
 
-                case sf::Event::Closed:                                             // make sure SFML closes when X in corner is pressed
-                    FILE *hardDiskFile;                                             // copy hardDisk to a file for longterm storage when the program closes
+                case sf::Event::Closed: // make sure SFML closes when X in corner is pressed
+                    FILE *hardDiskFile; // copy hardDisk to a file for longterm storage when the program closes
                     hardDiskFile = fopen("hardDisk.bin", "wb");
                     fwrite(hardDisk, 2, 16777216, hardDiskFile);
                     fclose(hardDiskFile);
