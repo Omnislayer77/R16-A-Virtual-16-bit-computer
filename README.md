@@ -84,7 +84,7 @@ For a full list of instructions and their respective opcode, go [here](https://d
 Opcodes can be one or two bytes long. For example, MOV REG, VAL would have the opcode ox 0x01 0x03. In this case all MOV opcodes start with 0x01 and the last byte is determined by what addressing modes the operands use. MOV had 14 valid combos as all of the MOV instructions have 2 operands. the lowest number, 8 in this case will be 0x00, 9 will be 0x01, etc. we see INST REG, VAL is number 11 which is 3 more than 8 so 0x03 is the second byte. Most if not all opcodes follow this pattern. Although, some similar opcodes (PUSH and POP, or JMP and conditionsal JMPs)) will have the same first byte. Again, a full list can be found [here](https://docs.google.com/document/d/1ns5I-qCbmX3Ec4WrGWVTEZ7ZqJ5IhnKenzHa4Ed42-w/edit?usp=sharing) as the 200+ opcodes is a lot to wirte in the readme file.
 
 
-# REGISTERS
+# Registers
 The R16 CPU has 16 16-Bit General Purpose registers. They can also be used as 8-Bit registers in the high or low halves of the register. The registers are refered to as r0-r15 and take up one byte in operands. The lower nibble of the byte is the register number, and the higher nibble is zero for 16-Bit register, one for the high 8-Bit register, and two for the low 8-Bit register. r15 is used by the CPU as the Stack Pointer and assemblers should change SP to r15. r14 is used as a base pointer when doing function calls and is BP in assembly. r13 is used as the status flags register and is SF in assembler.  The Instruction Pointer is an independent register and starts out at 0xE000 when the processor starts as this is where ROM starts.
 
 
