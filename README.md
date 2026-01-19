@@ -58,7 +58,7 @@ Much like x86, instructions with both operand reffering to memory locations are 
  21. INST [ADDR], VAL 
  
 # Machine Code Format
-For a full list of instructions and their respective opcode, go [here](https://docs.google.com/document/d/1ns5I-qCbmX3Ec4WrGWVTEZ7ZqJ5IhnKenzHa4Ed42-w/edit?usp=sharing). The machine code is assembled in the order of how the instruction would be written in assembly. Here is a list of each of the 6 addressing modes and how the would be written in machine code. Please note that values are stored in little endian form (least significant byte first).
+For a full list of instructions and their respective opcode, go [here](https://docs.google.com/document/d/1ns5I-qCbmX3Ec4WrGWVTEZ7ZqJ5IhnKenzHa4Ed42-w/edit?usp=sharing) (WIP). The machine code is assembled in the order of how the instruction would be written in assembly. Here is a list of each of the 6 addressing modes and how the would be written in machine code. Please note that values are stored in little endian form (least significant byte first).
 | Name | Bytes  | 
 |--|-- |
 | REG  | 1 
@@ -78,7 +78,7 @@ For a full list of instructions and their respective opcode, go [here](https://d
 |0x5422|0x22 0x54
 |$1299| 0x99 0x12
 |[$0420]|0x20 0x04
-|MOV [r3 + $a9e1], r6| 0x01 0x08 0x03 0xe1 0xa9 0x06 (note: MOV [REG + VAL], REG would have an opcode of 0x01 0x08)
+|MOV [r3 + 0xa9e1], r6| 0x01 0x08 0x03 0xe1 0xa9 0x06 (note: MOV [REG + VAL], REG would have an opcode of 0x01 0x08)
 
 ### Opcodes
 Opcodes can be one or two bytes long. For example, MOV REG, VAL would have the opcode ox 0x01 0x03. In this case all MOV opcodes start with 0x01 and the last byte is determined by what addressing modes the operands use. MOV had 14 valid combos as all of the MOV instructions have 2 operands. the lowest number, 8 in this case will be 0x00, 9 will be 0x01, etc. we see INST REG, VAL is number 11 which is 3 more than 8 so 0x03 is the second byte. Most if not all opcodes follow this pattern. Although, some similar opcodes (PUSH and POP, or JMP and conditionsal JMPs)) will have the same first byte. Again, a full list can be found [here](https://docs.google.com/document/d/1ns5I-qCbmX3Ec4WrGWVTEZ7ZqJ5IhnKenzHa4Ed42-w/edit?usp=sharing) as the 200+ opcodes is a lot to wirte in the readme file.
